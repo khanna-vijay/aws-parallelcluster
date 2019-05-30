@@ -131,37 +131,21 @@ def _get_json_from_s3(region, file_name):
     return json.loads(file_contents)
 
 
-def get_supported_features(region, feature):
+def get_supported_batch_instances(region):
     """
-    Get a json object containing the attributes supported by a feature, for example.
-
-    {
-        "Features": {
-            "efa": {
-                "instances": ["c5n.18xlarge", "p3dn.24xlarge", "i3en.24xlarge"],
-                "baseos": ["alinux", "centos7"],
-                "schedulers": ["sge", "slurm", "torque"]
-            },
-            "awsbatch": {
-                "instances": ["r3.8xlarge", ..., "m5.4xlarge"]
-            }
-        }
-    }
+    Get a json object containing the instances supported by batch.
 
     :param region: AWS Region
-    :param feature: the feature to search for, i.e. "efa" "awsbatch"
-    :return: json object containing all the attributes supported by feature
+    :param instance_type: the instance type to search for.
+    :return: json object containing the instances supported by batch
+    or an empty object if unable to parse/get the instance list file
     """
     try:
-        features = _get_json_from_s3(region, "features/feature_whitelist.json")
-        supported_features = features.get("Features").get(feature)
-    except (ValueError, ClientError, KeyError):
-        print(
-            "Failed validate %s. This is probably a bug on our end. Please set sanity_check = false and retry" % feature
-        )
-        exit(1)
+        instances = _get_json_from_s3(region, "instances/batch_instances.json")
+    except (ValueError, ClientError):
+        instances = ""
 
-    return supported_features
+    return instances
 
 
 def get_instance_vcpus(region, instance_type):
