@@ -190,7 +190,7 @@ class SgeCommands(SchedulerCommands):
         return int(result.stdout.split()[-1])
 
     def get_compute_nodes(self):  # noqa: D102
-        result = self._remote_command_executor.run_remote_command("qhost | grep -o ip- | awk '{print $1}'")
+        result = self._remote_command_executor.run_remote_command("qhost | grep ip- | awk '{print $1}'")
         return result.stdout.splitlines()
 
 

@@ -84,7 +84,7 @@ def test_nodewatcher_terminates_failing_node(scheduler, region, pcluster_config_
     assert_instance_replaced_or_terminating(instance_id, region)
     # verify that desired capacity is still 1
     assert_that(get_desired_asg_capacity(region, cluster.cfn_name)).is_equal_to(1)
-    _assert_nodes_removed_from_scheduler(compute_nodes)
+    _assert_nodes_removed_from_scheduler(scheduler_commands, compute_nodes)
 
     assert_no_errors_in_logs(remote_command_executor, ["/var/log/sqswatcher", "/var/log/jobwatcher"])
 

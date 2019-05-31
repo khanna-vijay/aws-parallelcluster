@@ -133,17 +133,17 @@ def _test_job_arrays_and_parallel_jobs(remote_command_executor, region, stack_na
     logging.info("Testing cluster scales correctly with array jobs and parallel jobs")
     slurm_commands = SlurmCommands(remote_command_executor)
 
-    result = remote_command_executor.run_remote_command("sbatch --wrap 'sleep 1' -a 5")
+    result = remote_command_executor.run_remote_command("sbatch --wrap 'sleep 1' -a 1-5")
     array_job_id = slurm_commands.assert_job_submitted(result.stdout)
 
-    remote_command_executor.run_remote_command("sbatch --wrap 'sleep 1' -c 3 -n 2")
+    result = remote_command_executor.run_remote_command("sbatch --wrap 'sleep 1' -c 3 -n 2")
     parallel_job_id = slurm_commands.assert_job_submitted(result.stdout)
 
     # Assert scaling worked as expected
     assert_scaling_worked(slurm_commands, region, stack_name, scaledown_idletime, expected_max=3, expected_final=0)
     # Assert jobs were completed
-    slurm_commands.assert_job_succeeded(array_job_id)
-    slurm_commands.assert_job_succeeded(parallel_job_id)
+    _assert_job_completed(remote_command_executor, array_job_id)
+    _assert_job_completed(remote_command_executor, parallel_job_id)
 
 
 def _retrieve_slurm_dummy_nodes_from_config(remote_command_executor):

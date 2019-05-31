@@ -106,7 +106,7 @@ def _test_job_arrays_and_parallel_jobs(remote_command_executor, region, stack_na
     result = remote_command_executor.run_remote_command("echo 'sleep 1' | qsub -t 1-5", raise_on_error=False)
     array_job_id = sge_commands.assert_job_submitted(result.stdout, is_array=True)
 
-    remote_command_executor.run_remote_command("echo 'sleep 1' | qsub -pe mpi 4", raise_on_error=False)
+    result = remote_command_executor.run_remote_command("echo 'sleep 1' | qsub -pe mpi 4", raise_on_error=False)
     parallel_job_id = sge_commands.assert_job_submitted(result.stdout)
 
     # Assert scaling worked as expected
